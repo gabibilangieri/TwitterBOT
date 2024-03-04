@@ -1,0 +1,15 @@
+import tweepy
+
+api = tweepy.Client(
+    consumer_key='API KEY'
+    consumer_secret='API SECRET KEY',
+    access_token='ACCESS TOKEN',
+    access_token_secret='ACCESS TOKEN SECRET'
+)
+
+try:
+    tweet = api.create_tweet(text="YOUR TWEET HERE/SEU TWEET AQUI")
+    print(tweet)
+except:
+    print("error")
+
