@@ -1,0 +1,45 @@
+import tweepy
+import csv
+import schedule
+import time
+import random
+
+# Substitua pelas suas próprias chaves de API do Twitter
+api_key = 'SUA_API_KEY'
+api_secret_key = 'SUA_API_SECRET_KEY'
+access_token = 'SEU_ACCESS_TOKEN'
+access_token_secret = 'SEU_ACCESS_TOKEN_SECRET'
+
+# Autenticação com a API do Twitter
+auth = tweepy.OAuthHandler(api_key, api_secret_key)
+auth.set_access_token(access_token, access_token_secret)
+api = tweepy.API(auth)
+
+# Verifica se a autenticação foi bem-sucedida
+try:
+    api.verify_credentials()
+    print("Autenticação OK")
+except:
+    print("Erro durante a autenticação")
+
+# Função para ler e tweetar do arquivo CSV
+def tweetar():
+    caminho_do_arquivo = 'caminho/para/seu/arquivo.csv'
+    with open(caminho_do_arquivo, 'r', encoding='utf-8') as arquivo:
+        linhas = list(csv.reader(arquivo))
+        random.shuffle(linhas)  # Embaralha as linhas do arquivo CSV
+        for linha in linhas:
+            tweet = linha[0]  # Assume que cada linha tem um tweet e não há cabeçalhos
+            try:
+                api.update_status(tweet)
+                print(f"Tweet enviado: {tweet}")
+            except Exception as e:
+                print(f"Erro ao enviar tweet: {e}")
+
+# Agendando o tweet a cada 6 horas
+schedule.every(6).hours.do(tweetar)
+
+# Loop para continuar executando o agendador
+while True:
+    schedule.run_pending()
+    time.sleep(1)
