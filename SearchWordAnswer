@@ -1,0 +1,40 @@
+import tweepy
+import time
+
+# Substitua pelos seus próprios valores das chaves de acesso da API do Twitter
+api_key = 'SUA_API_KEY'
+api_secret_key = 'SUA_API_SECRET_KEY'
+access_token = 'SEU_ACCESS_TOKEN'
+access_token_secret = 'SEU_ACCESS_TOKEN_SECRET'
+
+# Autenticação com a API do Twitter
+auth = tweepy.OAuthHandler(api_key, api_secret_key)
+auth.set_access_token(access_token, access_token_secret)
+api = tweepy.API(auth, wait_on_rate_limit=True)
+
+
+
+def responder_tweets():
+    print("Buscando por tweets...")
+    for tweet in tweepy.Cursor(api.search_tweets, q="hello", lang="en").items(5):
+        try:
+            print(f"Tweet encontrado: {tweet.text} - de @{tweet.user.screen_name}")
+
+            # Responde tweets alheios apenas
+            if tweet.user.screen_name == "SEU_USUARIO_NO_TWITTER":
+                continue
+
+            resposta = f"Olá @{tweet.user.screen_name}, como você está hoje?"
+            api.update_status(status=resposta, in_reply_to_status_id=tweet.id)
+            print(f"Respondido com: {resposta}")
+
+        except tweepy.TweepError as e:
+            print(e.reason)
+
+        except StopIteration:
+            break
+
+
+while True:
+    responder_tweets()
+    time.sleep(900)  # Espera por 15 minutos antes de buscar novamente
